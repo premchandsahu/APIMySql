@@ -11,7 +11,7 @@ const router = express.Router();
 router.get('/', fetchCustomers);
 router.get('/:customerno', fetchCustomerById);
 router.post('/', createCustomer);
-router.put('/', updateCustomerById);
+router.put('/:customerno', updateCustomerById);
 router.delete('/:customerno', deleteCustomerById);
 
 module.exports = router;

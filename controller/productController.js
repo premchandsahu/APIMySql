@@ -8,7 +8,7 @@ const createProduct = async (req, res) => {
        console.log(req.body)
         const {productno, name,description,purchaserate,salerate,productcategoryno,openingstock } = req.body;
         vproductno=productno
-           if (vproductno===0 || vproductno===null) {
+           if (vproductno===0 || vproductno===null || vproductno==="") {
                 query="select nvl((select max(productno) from productmaster),0)+1 nextproductno";
                 const [nextproductno]= await conn.query(query);
                 vproductno=nextproductno[0].nextproductno
@@ -28,7 +28,7 @@ const fetchProducts = async (req, res) => {
     let conn;
     try {
         conn = await db.getConnection();
-        const query = `SELECT productcategory.productcategoryname,product.* FROM productmaster product left join productcategorymaster productcategory on productcategory.productcategoryno=product.productcategoryno`;
+        const query = `SELECT productcategory.productcategoryname,product.* FROM productmaster product left join productcategorymaster productcategory on productcategory.productcategoryno=product.productcategoryno order by productno`;
         const [rows] = await conn.execute(query);
         console.log(rows)
         res.status(200).json(rows);
