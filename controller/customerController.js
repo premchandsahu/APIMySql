@@ -10,7 +10,7 @@ const createCustomer = async (req, res) => {
 
         vcustomerno=Number(custno)
         console.log(vcustomerno)
-           if (vcustomerno===0 || vcustomerno===null)  {
+           if (vcustomerno===0 || vcustomerno===null||vcustomerno=="")  {
                 query="select nvl((select max(custno) from customermaster),0)+1 nextcustomerno";
                 const [nextcustomerno]= await conn.query(query);
                 vcustomerno=nextcustomerno[0].nextcustomerno
@@ -51,7 +51,7 @@ const fetchCustomerById = async (req, res) => {
         query = `SELECT * FROM customermaster WHERE custno=${customerno}`;
         const [rows] = await conn.execute(query);
         var data = rows
-        res.status(200).json( data );
+        res.status(200).json( data[0] );
     } catch (err) {
         console.log('Error whie fetchCustomerById', err);
         throw err;

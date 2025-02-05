@@ -69,7 +69,7 @@ const updatePaymentmodeById = async (req, res) => {
             'UPDATE paymentmodemaster SET paymentmodename=? ,paymentmodeaddress=? ,paymentmodephone1=? ,paymentmodephone2=? ,paymentmodeemail=? ,openingbalance=?   WHERE paymentmodeno=?';
         const [result] = await conn.execute(query,[paymentmodename ,paymentmodeaddress ,paymentmodephone1 ,paymentmodephone2 ,paymentmodeemail ,openingbalance, paymentmodeno]);
         console.log('Record Updated : ', result);
-        res.status(200).json({ data: 'Paymentmode Updated' });
+        res.status(200).json({ data: 'Paymentmode Updated',result:'pass' });
     } catch (err) {
         console.log('Error whie update PaymentmodeByID', err);
         throw err;

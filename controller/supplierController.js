@@ -3,20 +3,19 @@ const db = require("../database");
 const createSupplier = async (req, res) => {
     let conn;
     var query,vsupplierno,mode;
-    console.log(req.body)
     try {
         conn = await db.getConnection();
        
         const {supplierno ,suppliername ,supplieraddress ,supplierphone1 ,supplierphone2 ,supplieremail ,openingbalance  } = req.body;
         vsupplierno=supplierno
-           if (vsupplierno===0 || vsupplierno===null|| vsupplierno==="") {
-                query="select nvl((select max(supplierno) from suppliermaster),0)+1 nextsupplierno";
+           if (vsupplierno===0 || vsupplierno===null ||vsupplierno==="") {
+                query="select nvl((select max(v) from suppliermaster),0)+1 nextsupplierno";
                 const [nextsupplierno]= await conn.query(query);
                 vsupplierno=nextsupplierno[0].nextsupplierno
            } 
             query = 'INSERT INTO suppliermaster values (?,?,?,?,?,?,?) '; 
             const [result] = await conn.execute(query, [vsupplierno,suppliername ,supplieraddress ,supplierphone1 ,supplierphone2 ,supplieremail ,openingbalance])
-            res.status(201).json({ supplierno:vsupplierno, data: 'Supplier '+ mode,result:'pass' });
+            res.status(201).json({ supplierno:vsupplierno, data: 'Supplier '+ mode,result: 'pass' });
     } catch (err) {
         console.log('Error whie creating supplier', err);
         throw err;
@@ -50,7 +49,7 @@ const fetchSupplierById = async (req, res) => {
         query = `SELECT * FROM suppliermaster WHERE supplierno=${supplierno}`;
         const [rows] = await conn.execute(query);
         var data = rows
-        res.status(200).json( data );
+        res.status(200).json( data[0] );
     } catch (err) {
         console.log('Error whie fetchSupplierById', err);
         throw err;
@@ -70,7 +69,7 @@ const updateSupplierById = async (req, res) => {
             'UPDATE suppliermaster SET suppliername=? ,supplieraddress=? ,supplierphone1=? ,supplierphone2=? ,supplieremail=? ,openingbalance=?   WHERE supplierno=?';
         const [result] = await conn.execute(query,[suppliername ,supplieraddress ,supplierphone1 ,supplierphone2 ,supplieremail ,openingbalance, supplierno]);
         console.log('Record Updated : ', result);
-        res.status(200).json({ data: 'Supplier Updated',result:'pass' });
+        res.status(200).json({ data: 'Supplier Updated',result: 'pass' });
     } catch (err) {
         console.log('Error whie update SupplierByID', err);
         throw err;

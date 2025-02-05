@@ -109,7 +109,7 @@ const deletePurchaseById = async (req, res) => {
         query="delete from purchasemaster where centerno=? and purchaseno=?"
         const [result]=await conn.execute(query,[centerno,purchaseno]);
         console.log('Rows affected:', result.affectedRows,'Rows affeccted lines:',resultl.affectedRows);
-        res.status(200).json({ data: 'Purchase Deleted',result:'pass' });
+        res.status(200).json({ data: 'Purchase Deleted' });
     } catch (err) {
         console.log('Error whie deletePurchaseById', err);
         throw err;

@@ -2,11 +2,9 @@ const express = require('express');
 const {centerRoutes,invoiceRoutes,purchaseRoutes,productRoutes,productcategoryRoutes,customerRoutes,supplierRoutes,supplierpaymentRoutes,customerreceiptRoutes,userRoutes,paymentmodeRoutes} = require('./router');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-var os = require("os");
-var hostname = os.hostname();
-const host = hostname
+
 const app = express();
-const port =  process.env.PORT || 3000;
+const port = process.env.PORT ||3000;
 
 
 
@@ -26,8 +24,11 @@ app.use('/productcategory', productcategoryRoutes);
 app.use('/center', centerRoutes);
 app.use('/user', userRoutes);
 app.use('/paymentmode', paymentmodeRoutes);
+app.get("/test", (req, res) => {
+    res.send("Test route is working!");
+});
 //app.use('/order-items', orderItemsRoutes);
 
-app.listen(port,host, () => {
-    console.log(`Server running on http://${host}:${port}`);
+app.listen(port, () => {
+    console.log(`Server running on http://localhost:${port}`);
 });

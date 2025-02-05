@@ -8,14 +8,14 @@ const createUser = async (req, res) => {
        
         const {userno ,username ,password ,email  } = req.body;
         vuserno=userno
-           if (vuserno===0 || vuserno===null) {
+           if (vuserno===0 || vuserno===null || vuserno==="") {
                 query="select nvl((select max(v) from usermaster),0)+1 nextuserno";
                 const [nextuserno]= await conn.query(query);
                 vuserno=nextuserno[0].nextuserno
            } 
             query = 'INSERT INTO usermaster values (?,?,?,?,?,?,?) '; 
             const [result] = await conn.execute(query, [vuserno,username ,password ,email ])
-            res.status(201).json({ userno:vuserno, data: 'User '+ mode });
+            res.status(201).json({ userno:vuserno, data: 'User '+ mode,result: 'pass' });
     } catch (err) {
         console.log('Error whie creating user', err);
         throw err;
@@ -69,7 +69,7 @@ const updateUserById = async (req, res) => {
             'UPDATE usermaster SET username ,password ,email WHERE userno=?';
         const [result] = await conn.execute(query,[username ,password ,email , userno]);
         console.log('Record Updated : ', result);
-        res.status(200).json({ data: 'User Updated' });
+        res.status(200).json({ data: 'User Updated' , result:"pass"});
     } catch (err) {
         console.log('Error whie update UserByID', err);
         throw err;
