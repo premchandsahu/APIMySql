@@ -4,7 +4,7 @@ class Database {
     constructor() {
         if (!Database.instance) {
             this.pool = mysql.createPool({
-                host: 'srv1824.hstgr.io',
+                host: '193.203.184.196',
                 user: 'u310194916_jh',
                 password: 'MYSQLPrem@1977',
                 database: 'u310194916_jh'
