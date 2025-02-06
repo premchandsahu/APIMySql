@@ -9,6 +9,7 @@ const supplierpaymentRoutes = require('./supplierpaymentRoutes');
 const centerRoutes = require('./centerRoutes');
 const userRoutes = require('./userRoutes');
 const paymentmodeRoutes = require('./paymentmodeRoutes');
+const reportRoutes = require('./reportRoutes');
 
 module.exports = {
     invoiceRoutes,
@@ -21,5 +22,6 @@ module.exports = {
     productcategoryRoutes,
     centerRoutes,
     userRoutes,
-    paymentmodeRoutes
+    paymentmodeRoutes,
+    reportRoutes
 }

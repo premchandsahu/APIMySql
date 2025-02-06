@@ -1,5 +1,5 @@
 const express = require('express');
-const {centerRoutes,invoiceRoutes,purchaseRoutes,productRoutes,productcategoryRoutes,customerRoutes,supplierRoutes,supplierpaymentRoutes,customerreceiptRoutes,userRoutes,paymentmodeRoutes} = require('./router');
+const {centerRoutes,invoiceRoutes,purchaseRoutes,productRoutes,productcategoryRoutes,customerRoutes,supplierRoutes,supplierpaymentRoutes,customerreceiptRoutes,userRoutes,paymentmodeRoutes, reportRoutes} = require('./router');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
@@ -24,6 +24,7 @@ app.use('/productcategory', productcategoryRoutes);
 app.use('/center', centerRoutes);
 app.use('/user', userRoutes);
 app.use('/paymentmode', paymentmodeRoutes);
+app.use('/report', reportRoutes);
 app.get("/test", (req, res) => {
     res.send("Test route is working!");
 });
