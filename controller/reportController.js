@@ -21,10 +21,10 @@ const getCustomerOpeningBalance = async (req, res) => {
 const getCustomerTransactions = async (req, res) => {
     let conn;
     console.log(req.body)
-    const {custno,fromdate,todate}=req.body
+    const {fromdate,todate,custno}=req.body
     try {
         conn = await db.getConnection();
-        const query = `select * from transactions where transactions.custno=? and tdate between ? and ?`;
+        const query = `select * from transactions where transactions.custno=? and tdate between ? and ? order by tdate`;
         const [rows] = await conn.execute(query,[custno,fromdate,todate]);
         res.status(200).json(rows);
     } catch (err) {
