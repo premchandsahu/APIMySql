@@ -63,9 +63,9 @@ const fetchInvoiceById = async (req, res) => {
         conn = await db.getConnection();
         const invoiceno = req.params.invoiceno;
         const centerno = req.params.centerno;
-        query = `SELECT * FROM invoicemaster WHERE invoiceno? and centerno=?`;
+        query = 'SELECT * FROM invoicemaster WHERE invoiceno=? and centerno=?';
         const [rows] = await conn.execute(query, [invoiceno, centerno]);
-        query = `SELECT productno,productqty,productrate,total FROM invoiceline WHERE invoiceno=? and centerno=?`;
+        query = 'SELECT productno,productqty,productrate,total FROM invoiceline WHERE invoiceno=? and centerno=? ';
         const [rowsd] = await conn.execute(query, [invoiceno, centerno]);
         var data = rows
         data[0].details = await rowsd
