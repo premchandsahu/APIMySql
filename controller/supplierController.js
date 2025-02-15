@@ -9,7 +9,7 @@ const createSupplier = async (req, res) => {
         const {supplierno ,suppliername ,supplieraddress ,supplierphone1 ,supplierphone2 ,supplieremail ,openingbalance  } = req.body;
         vsupplierno=supplierno
            if (vsupplierno===0 || vsupplierno===null ||vsupplierno==="") {
-                query="select nvl((select max(v) from suppliermaster),0)+1 nextsupplierno";
+                query="select nvl((select max(supplierno) from suppliermaster),0)+1 nextsupplierno";
                 const [nextsupplierno]= await conn.query(query);
                 vsupplierno=nextsupplierno[0].nextsupplierno
            } 
@@ -46,8 +46,8 @@ const fetchSupplierById = async (req, res) => {
         var query;
         conn = await db.getConnection();
         const supplierno = req.params.supplierno;
-        query = `SELECT * FROM suppliermaster WHERE supplierno=${supplierno}`;
-        const [rows] = await conn.execute(query);
+        query = `SELECT * FROM suppliermaster WHERE supplierno=?`;
+        const [rows] = await conn.execute(query,[supplierno]);
         var data = rows
         res.status(200).json( data[0] );
     } catch (err) {

@@ -2,34 +2,34 @@ const db = require("../database");
 
 const createInvoice = async (req, res) => {
     let conn;
-    var query,vinvoiceno,mode;
+    var query, vinvoiceno, mode;
     try {
         conn = await db.getConnection();
-        console.log(req.body)    
-        const {invoiceno,centerno,invoicedate,custno,total,remarks,details } = req.body;
-        vinvoiceno=invoiceno
-        console.log('invoiceno',vinvoiceno,centerno,invoicedate,custno,total,remarks,details )
-           if (vinvoiceno===0 || vinvoiceno===null || vinvoiceno==="") {
-                query="select nvl((select max(invoiceno) from invoicemaster where centerno=?),0)+1 nextinvoiceno";
-                const [nextinvoiceno]= await conn.query(query,[centerno]);
-                vinvoiceno=nextinvoiceno[0].nextinvoiceno
-                mode="created"
-           } 
-           else {
-                query="delete from invoiceline where centerno=? and invoiceno=?"
-                await conn.query(query,[centerno,vinvoiceno]);
-                query="delete from invoicemaster where centerno=? and invoiceno=?"
-                await conn.query(query,[centerno,vinvoiceno]);
-                mode="modified"
-           }
-           console.log("calculate invoiceno",vinvoiceno)
-            query = 'INSERT INTO invoicemaster values (?,?,?,?,?,?) '; 
-            const [result] = await conn.execute(query, [vinvoiceno,invoicedate,custno,centerno,total,remarks])
-            query = 'INSERT INTO invoiceline values (?,?,?,?,?,?) '; 
-            for (let i in details){
-                await conn.query(query,[vinvoiceno,centerno,details[i].productno,details[i].productqty,details[i].productrate,details[i].total]);
-            }
-        res.status(201).json({ invoiceno:vinvoiceno, result: 'pass' });
+        console.log(req.body)
+        const { invoiceno, centerno, invoicedate, custno, total, remarks, details } = req.body;
+        vinvoiceno = invoiceno
+        console.log('invoiceno', vinvoiceno, centerno, invoicedate, custno, total, remarks, details)
+        if (vinvoiceno === 0 || vinvoiceno === null || vinvoiceno === "") {
+            query = "select nvl((select max(invoiceno) from invoicemaster where centerno=?),0)+1 nextinvoiceno";
+            const [nextinvoiceno] = await conn.query(query, [centerno]);
+            vinvoiceno = nextinvoiceno[0].nextinvoiceno
+            mode = "created"
+        }
+        else {
+            query = "delete from invoiceline where centerno=? and invoiceno=?"
+            await conn.query(query, [centerno, vinvoiceno]);
+            query = "delete from invoicemaster where centerno=? and invoiceno=?"
+            await conn.query(query, [centerno, vinvoiceno]);
+            mode = "modified"
+        }
+        console.log("calculate invoiceno", vinvoiceno)
+        query = 'INSERT INTO invoicemaster values (?,?,?,?,?,?) ';
+        const [result] = await conn.execute(query, [vinvoiceno, invoicedate, custno, centerno, total, remarks])
+        query = 'INSERT INTO invoiceline values (?,?,?,?,?,?) ';
+        for (let i in details) {
+            await conn.query(query, [vinvoiceno, centerno, details[i].productno, details[i].productqty, details[i].productrate, details[i].total]);
+        }
+        res.status(201).json({ invoiceno: vinvoiceno, result: 'pass' });
     } catch (err) {
         console.log('Error whie creating invoice', err);
         throw err;
@@ -63,13 +63,13 @@ const fetchInvoiceById = async (req, res) => {
         conn = await db.getConnection();
         const invoiceno = req.params.invoiceno;
         const centerno = req.params.centerno;
-        query = `SELECT * FROM invoicemaster WHERE invoiceno=${invoiceno} and centerno=${centerno}`;
-        const [rows] = await conn.execute(query);
-        query = `SELECT productno,productqty,productrate,total FROM invoiceline WHERE invoiceno=${invoiceno} and centerno=${centerno}`;
-        const [rowsd] = await conn.execute(query);
+        query = `SELECT * FROM invoicemaster WHERE invoiceno? and centerno=?`;
+        const [rows] = await conn.execute(query, [invoiceno, centerno]);
+        query = `SELECT productno,productqty,productrate,total FROM invoiceline WHERE invoiceno=? and centerno=?`;
+        const [rowsd] = await conn.execute(query, [invoiceno, centerno]);
         var data = rows
-        data[0].details =await rowsd 
-        res.status(200).json( data );
+        data[0].details = await rowsd
+        res.status(200).json(data);
     } catch (err) {
         console.log('Error whie fetchInvoiceById', err);
         throw err;
@@ -107,11 +107,11 @@ const deleteInvoiceById = async (req, res) => {
         const invoiceno = req.params.invoiceno;
         const centerno = req.params.centerno;
         conn = await db.getConnection();
-        query="delete from invoiceline where centerno=? and invoiceno=?"
-        const [resultl]=await conn.execute(query,[centerno,invoiceno]);
-        query="delete from invoicemaster where centerno=? and invoiceno=?"
-        const [result]=await conn.execute(query,[centerno,invoiceno]);
-        console.log('Rows affected:', result.affectedRows,'Rows affeccted lines:',resultl.affectedRows);
+        query = "delete from invoiceline where centerno=? and invoiceno=?"
+        const [resultl] = await conn.execute(query, [centerno, invoiceno]);
+        query = "delete from invoicemaster where centerno=? and invoiceno=?"
+        const [result] = await conn.execute(query, [centerno, invoiceno]);
+        console.log('Rows affected:', result.affectedRows, 'Rows affeccted lines:', resultl.affectedRows);
         res.status(200).json({ data: 'Invoice Deleted' });
     } catch (err) {
         console.log('Error whie deleteInvoiceById', err);
@@ -123,11 +123,11 @@ const deleteInvoiceById = async (req, res) => {
 }
 
 const InvoiceSummary = async (req, res) => {
-    let conn,customerfilter,finalquery,centerfilter;
-    const {fromdate,todate,custno,centerno} =await req.body
-    const vecenterno=centerno?centerno:1
-    centerfilter=centerno?` and invoicem.centerno=${centerno}`:" "
-    customerfilter=custno?` and customer.custno=${custno}`:" "
+    let conn, customerfilter, finalquery, centerfilter, rows;
+    const { fromdate, todate, custno, centerno } = await req.body
+    const vecenterno = centerno ? centerno : 1
+    centerfilter = centerno ? ` and invoicem.centerno=?` : " "
+    customerfilter = custno ? ` and customer.custno=?` : " "
     try {
         conn = await db.getConnection();
         const query = `SELECT customer.customername,invoicem.invoiceno,invoicem.invoicedate,invoicem.total totalSAmount,sum(invoicel.productqty*pm.purchaserate) totalPAmount,group_concat(pm.name,':',invoicel.productqty,'x',invoicel.productrate,'=',invoicel.total ) description 
@@ -136,9 +136,22 @@ const InvoiceSummary = async (req, res) => {
                         inner join productmaster pm on invoicel.productno=pm.productno
                         inner join customermaster customer on customer.custno=invoicem.custno
                         inner join productmaster product on product.productno=invoicel.productno 
-                        where invoicedate between '${fromdate}' and  STR_TO_DATE('${todate}','%Y-%m-%d') `;
-                      finalquery=await query.concat(centerfilter,customerfilter,"  group by customer.customername,invoicem.invoiceno,invoicem.invoicedate,invoicem.total order by invoicem.invoiceno" )                          
-        const [rows] = await conn.execute(finalquery);
+                        where invoicedate between ? and  ? `; //STR_TO_DATE(?,'%Y-%m-%d')
+        finalquery = await query.concat(centerfilter, customerfilter, "  group by customer.customername,invoicem.invoiceno,invoicem.invoicedate,invoicem.total order by invoicem.invoiceno")
+        
+        if (centerno && custno) {
+            [rows] = await conn.execute(finalquery, [fromdate, todate, centerno, custno]);
+        } else if (centerno) {
+            [rows] = await conn.execute(finalquery, [fromdate, todate, centerno]);
+        } else if (custno) {
+            [rows] = await conn.execute(finalquery, [fromdate, todate, custno]);
+        } else {
+            [rows] = await conn.execute(finalquery, [fromdate, todate]);
+        }
+
+     
+
+        //const [rows] = await conn.execute(finalquery,[fromdate,todate]);
         res.status(200).json(rows);
     } catch (err) {
         console.log('Error whie fetchInvoices', err);

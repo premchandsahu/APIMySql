@@ -48,10 +48,10 @@ const fetchCustomerById = async (req, res) => {
         var query;
         conn = await db.getConnection();
         const customerno = req.params.customerno;
-        query = `SELECT * FROM customermaster WHERE custno=${customerno}`;
-        const [rows] = await conn.execute(query);
+        query = `SELECT * FROM customermaster WHERE custno=?`;
+        const [rows] = await conn.execute(query,[customerno]);
         var data = rows
-        res.status(200).json( data[0] );
+        res.status(200).json( data );
     } catch (err) {
         console.log('Error whie fetchCustomerById', err);
         throw err;

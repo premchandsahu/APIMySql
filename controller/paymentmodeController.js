@@ -46,8 +46,8 @@ const fetchPaymentmodeById = async (req, res) => {
         var query;
         conn = await db.getConnection();
         const paymentmodeno = req.params.paymentmodeno;
-        query = `SELECT * FROM paymentmodemaster WHERE paymentmodeno=${paymentmodeno}`;
-        const [rows] = await conn.execute(query);
+        query = `SELECT * FROM paymentmodemaster WHERE paymentmodeno=?`;
+        const [rows] = await conn.execute(query,[paymentmodeno]);
         var data = rows
         res.status(200).json( data[0] );
     } catch (err) {

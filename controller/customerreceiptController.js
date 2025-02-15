@@ -47,8 +47,8 @@ const fetchCustomerreceiptById = async (req, res) => {
         var query;
         conn = await db.getConnection();
         const customerreceiptno = req.params.customerreceiptno;
-        query = `SELECT * FROM customerreceipt WHERE customerreceiptno=${customerreceiptno}`;
-        const [rows] = await conn.execute(query);
+        query = `SELECT * FROM customerreceipt WHERE customerreceiptno=?`;
+        const [rows] = await conn.execute(query,[customerreceiptno]);
         var data = rows
         res.status(200).json( data );
     } catch (err) {

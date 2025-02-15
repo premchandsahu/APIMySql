@@ -36,7 +36,8 @@ const fetchCenters = async (req, res) => {
         throw err;
     } finally {
         console.log('DB conn released');
-        conn.release();
+      //  conn.destroy();
+       conn.release();
     }
 }
 
@@ -46,8 +47,8 @@ const fetchCenterById = async (req, res) => {
         var query;
         conn = await db.getConnection();
         const centerno = req.params.centerno;
-        query = `SELECT * FROM centermaster WHERE centerno=${centerno}`;
-        const [rows] = await conn.execute(query);
+        query = `SELECT * FROM centermaster WHERE centerno=?`;
+        const [rows] = await conn.execute(query,[centerno]);
         var data = rows
         res.status(200).json( data[0] );
     } catch (err) {

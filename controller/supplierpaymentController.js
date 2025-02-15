@@ -46,8 +46,8 @@ const fetchSupplierpaymentById = async (req, res) => {
         var query;
         conn = await db.getConnection();
         const supplierpaymentno = req.params.supplierpaymentno;
-        query = `SELECT * FROM supplierpayment WHERE supplierpaymentno=${supplierpaymentno}`;
-        const [rows] = await conn.execute(query);
+        query = `SELECT * FROM supplierpayment WHERE supplierpaymentno=?`;
+        const [rows] = await conn.execute(query,[supplierpaymentno]);
         var data = rows
         res.status(200).json( data );
     } catch (err) {

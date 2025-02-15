@@ -47,8 +47,8 @@ const fetchProductById = async (req, res) => {
         var query;
         conn = await db.getConnection();
         const productno = req.params.productno;
-        query = `SELECT * FROM productmaster WHERE productno=${productno}`;
-        const [rows] = await conn.execute(query);
+        query = `SELECT * FROM productmaster WHERE productno=?`;
+        const [rows] = await conn.execute(query,[productno]);
         var data = rows
         res.status(200).json( data );
     } catch (err) {

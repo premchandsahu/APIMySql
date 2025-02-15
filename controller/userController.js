@@ -46,8 +46,8 @@ const fetchUserById = async (req, res) => {
         var query;
         conn = await db.getConnection();
         const userno = req.params.userno;
-        query = `SELECT * FROM usermaster WHERE userno=${userno}`;
-        const [rows] = await conn.execute(query);
+        query = `SELECT * FROM usermaster WHERE userno=?`;
+        const [rows] = await conn.execute(query,[userno]);
         var data = rows
         res.status(200).json( data[0] );
     } catch (err) {

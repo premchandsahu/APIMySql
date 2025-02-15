@@ -2,7 +2,7 @@ const mysql = require('mysql2/promise');
 
 class Database {
     constructor() {
-        if (!Database.instance) {
+       if (!Database.instance) {
             this.pool = mysql.createPool({
                 host: '193.203.184.196',
                 user: 'u310194916_jh',
@@ -11,6 +11,7 @@ class Database {
             });
             Database.instance = this;
         }
+        
         return Database.instance;
     }
 
