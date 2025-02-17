@@ -14,7 +14,7 @@ const createSupplierpayment = async (req, res) => {
                 vsupplierpaymentno=nextsupplierpaymentno[0].nextsupplierpaymentno
            } 
             query = 'INSERT INTO supplierpayment values (?,?,?,?,?,?,?) '; 
-            const [result] = await conn.execute(query, [vsupplierpaymentno,supplierpaymentdate,supplierno,paymentamount,paymentmodeno,documentnumber,remarks])
+            const [result] = await conn.query(query, [vsupplierpaymentno,supplierpaymentdate,supplierno,paymentamount,paymentmodeno,documentnumber,remarks])
             res.status(201).json({ supplierno:vsupplierpaymentno, data: 'Supplierpayment '+ mode,result:"pass" });
     } catch (err) {
         console.log('Error whie creating supplierpayment', err);
@@ -29,7 +29,7 @@ const fetchSupplierpayments = async (req, res) => {
     try {
         conn = await db.getConnection();
         const query = `SELECT suppliermaster.suppliername,supplierpayment.* FROM supplierpayment inner join suppliermaster on suppliermaster.supplierno=supplierpayment.supplierno`;
-        const [rows] = await conn.execute(query);
+        const [rows] = await conn.query(query);
         res.status(200).json(rows);
     } catch (err) {
         console.log('Error whie fetchSupplierpayments', err);
@@ -47,7 +47,7 @@ const fetchSupplierpaymentById = async (req, res) => {
         conn = await db.getConnection();
         const supplierpaymentno = req.params.supplierpaymentno;
         query = `SELECT * FROM supplierpayment WHERE supplierpaymentno=?`;
-        const [rows] = await conn.execute(query,[supplierpaymentno]);
+        const [rows] = await conn.query(query,[supplierpaymentno]);
         var data = rows
         res.status(200).json( data );
     } catch (err) {
@@ -67,7 +67,7 @@ const updateSupplierpaymentById = async (req, res) => {
         conn = await db.getConnection();
         const query =
             'UPDATE supplierpayment SET supplierpaymentdate=?,supplierno=?,paymentamount=?,paymentmodeno=?,documentnumber=?,remarks=?   WHERE supplierpaymentno=?';
-        const [result] = await conn.execute(query,[supplierpaymentdate,supplierno,paymentamount,paymentmodeno,documentnumber,remarks,supplierpaymentno]);
+        const [result] = await conn.query(query,[supplierpaymentdate,supplierno,paymentamount,paymentmodeno,documentnumber,remarks,supplierpaymentno]);
         console.log('Record Updated : ', result);
         res.status(200).json({ data: 'Supplierpayment Updated',result:"pass" });
     } catch (err) {
@@ -85,7 +85,7 @@ const deleteSupplierpaymentById = async (req, res) => {
         const supplierpaymentno = req.params.supplierpaymentno;
         conn = await db.getConnection();
         query="delete from supplierpayment where supplierpaymentno=?"
-        const [result]=await conn.execute(query,[supplierpaymentno]);
+        const [result]=await conn.query(query,[supplierpaymentno]);
         console.log('Rows affected:', result.affectedRows);
         res.status(200).json({ data: 'Supplierpayment Deleted' });
     } catch (err) {

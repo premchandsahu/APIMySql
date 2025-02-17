@@ -23,7 +23,7 @@ const createPurchase = async (req, res) => {
             mode = "modified"
         }
         query = 'INSERT INTO purchasemaster values (?,?,?,?,?,?) ';
-        const [result] = await conn.execute(query, [vpurchaseno, purchasedate, supplierno, centerno, total, remarks])
+        const [result] = await conn.query(query, [vpurchaseno, purchasedate, supplierno, centerno, total, remarks])
         query = 'INSERT INTO purchaseline values (?,?,?,?,?,?) ';
         for (let i in details) {
             await conn.query(query, [vpurchaseno, centerno, details[i].productno, details[i].productqty, details[i].productrate, details[i].total]);
@@ -42,7 +42,7 @@ const fetchPurchases = async (req, res) => {
     try {
         conn = await db.getConnection();
         const query = `SELECT supplier.suppliername,purchase.* FROM purchasemaster purchase inner join suppliermaster supplier on supplier.supplierno=purchase.supplierno`;
-        const [rows] = await conn.execute(query);
+        const [rows] = await conn.query(query);
         res.status(200).json(rows);
     } catch (err) {
         console.log('Error whie fetchPurchases', err);
@@ -61,9 +61,9 @@ const fetchPurchaseById = async (req, res) => {
         const purchaseno = req.params.purchaseno;
         const centerno = req.params.centerno;
         query = `SELECT * FROM purchasemaster WHERE purchaseno=? and centerno=?`;
-        const [rows] = await conn.execute(query, [purchaseno, centerno]);
+        const [rows] = await conn.query(query, [purchaseno, centerno]);
         query = `SELECT productno,productqty,productrate,total FROM purchaseline WHERE purchaseno=? and centerno=?`;
-        const [rowsd] = await conn.execute(query, [purchaseno, centerno]);
+        const [rowsd] = await conn.query(query, [purchaseno, centerno]);
         var data = rows
         data[0].details = await rowsd
         res.status(200).json(data);
@@ -85,7 +85,7 @@ const updatePurchaseById = async (req, res) => {
         conn = await db.getConnection();
         const query =
             'UPDATE tasks SET task_name=?, is_done=?, updated_at=? WHERE id=?';
-        const [result] = await conn.execute(query,
+        const [result] = await conn.query(query,
             [task_name, is_done, new Date(), id]);
         console.log('Record Updated : ', result);
         res.status(200).json({ data: 'Task Updated' });
@@ -105,9 +105,9 @@ const deletePurchaseById = async (req, res) => {
         const centerno = req.params.centerno;
         conn = await db.getConnection();
         query = "delete from purchaseline where centerno=? and purchaseno=?"
-        const [resultl] = await conn.execute(query, [centerno, purchaseno]);
+        const [resultl] = await conn.query(query, [centerno, purchaseno]);
         query = "delete from purchasemaster where centerno=? and purchaseno=?"
-        const [result] = await conn.execute(query, [centerno, purchaseno]);
+        const [result] = await conn.query(query, [centerno, purchaseno]);
         console.log('Rows affected:', result.affectedRows, 'Rows affeccted lines:', resultl.affectedRows);
         res.status(200).json({ data: 'Purchase Deleted' });
     } catch (err) {
@@ -133,13 +133,13 @@ const purchaseSummary = async (req, res) => {
                         where purchasedate between ? and  STR_TO_DATE(?,'%Y-%m-%d') `;
         finalquery = await query.concat(centerfilter, customerfilter, " order by purchase.purchaseno")
         if (centerno && supplierno) {
-            [rows] = await conn.execute(finalquery, [fromdate, todate, centerno, supplierno]);
+            [rows] = await conn.query(finalquery, [fromdate, todate, centerno, supplierno]);
         } else if (centerno) {
-            [rows] = await conn.execute(finalquery, [fromdate, todate, centerno]);
+            [rows] = await conn.query(finalquery, [fromdate, todate, centerno]);
         } else if (supplierno) {
-            [rows] = await conn.execute(finalquery, [fromdate, todate, supplierno]);
+            [rows] = await conn.query(finalquery, [fromdate, todate, supplierno]);
         } else {
-            [rows] = await conn.execute(finalquery, [fromdate, todate]);
+            [rows] = await conn.query(finalquery, [fromdate, todate]);
         }
 
         res.status(200).json(rows);

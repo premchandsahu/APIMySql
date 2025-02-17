@@ -14,7 +14,7 @@ const createProductcategory = async (req, res) => {
                 vproductcategoryno=nextproductcategoryno[0].nextproductcategoryno
            } 
             query = 'INSERT INTO productcategorymaster values (?,?,?,?,?,?,?) '; 
-            const [result] = await conn.execute(query, [vproductcategoryno,productcategoryname])
+            const [result] = await conn.query(query, [vproductcategoryno,productcategoryname])
             res.status(201).json({ productcategoryno:vproductcategoryno, data: 'Productcategory '+ mode });
     } catch (err) {
         console.log('Error whie creating productcategory', err);
@@ -29,7 +29,7 @@ const fetchProductcategorys = async (req, res) => {
     try {
         conn = await db.getConnection();
         const query = `SELECT  productcategory.* FROM productcategorymaster productcategory`;
-        const [rows] = await conn.execute(query);
+        const [rows] = await conn.query(query);
         console.log(rows)
         res.status(200).json(rows);
     } catch (err) {
@@ -48,7 +48,7 @@ const fetchProductcategoryById = async (req, res) => {
         conn = await db.getConnection();
         const productcategoryno = req.params.productcategoryno;
         query = `SELECT * FROM productcategorymaster WHERE productcategoryno=?`;
-        const [rows] = await conn.execute(query,[productcategoryno]);
+        const [rows] = await conn.query(query,[productcategoryno]);
         var data = rows
         res.status(200).json( data[0] );
     } catch (err) {
@@ -68,7 +68,7 @@ const updateProductcategoryById = async (req, res) => {
         conn = await db.getConnection();
         const query =
             'UPDATE productcategorymaster SET productcategoryname=?  WHERE productcategoryno=?';
-        const [result] = await conn.execute(query,[productcategoryname, productcategoryno]);
+        const [result] = await conn.query(query,[productcategoryname, productcategoryno]);
         console.log('Record Updated : ', result);
         res.status(200).json({ data: 'Productcategory Updated' });
     } catch (err) {
@@ -86,7 +86,7 @@ const deleteProductcategoryById = async (req, res) => {
         const productcategoryno = req.params.productcategoryno;
         conn = await db.getConnection();
         query="delete from productcategorymaster where productcategoryno=?"
-        const [result]=await conn.execute(query,[productcategoryno]);
+        const [result]=await conn.query(query,[productcategoryno]);
         console.log('Rows affected:', result.affectedRows);
         res.status(200).json({ data: 'Productcategory Deleted' });
     } catch (err) {

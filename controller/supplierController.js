@@ -14,7 +14,7 @@ const createSupplier = async (req, res) => {
                 vsupplierno=nextsupplierno[0].nextsupplierno
            } 
             query = 'INSERT INTO suppliermaster values (?,?,?,?,?,?,?) '; 
-            const [result] = await conn.execute(query, [vsupplierno,suppliername ,supplieraddress ,supplierphone1 ,supplierphone2 ,supplieremail ,openingbalance])
+            const [result] = await conn.query(query, [vsupplierno,suppliername ,supplieraddress ,supplierphone1 ,supplierphone2 ,supplieremail ,openingbalance])
             res.status(201).json({ supplierno:vsupplierno, data: 'Supplier '+ mode,result: 'pass' });
     } catch (err) {
         console.log('Error whie creating supplier', err);
@@ -29,7 +29,7 @@ const fetchSuppliers = async (req, res) => {
     try {
         conn = await db.getConnection();
         const query = `SELECT supplier.* FROM suppliermaster supplier`;
-        const [rows] = await conn.execute(query);
+        const [rows] = await conn.query(query);
         res.status(200).json(rows);
     } catch (err) {
         console.log('Error whie fetchSuppliers', err);
@@ -47,7 +47,7 @@ const fetchSupplierById = async (req, res) => {
         conn = await db.getConnection();
         const supplierno = req.params.supplierno;
         query = `SELECT * FROM suppliermaster WHERE supplierno=?`;
-        const [rows] = await conn.execute(query,[supplierno]);
+        const [rows] = await conn.query(query,[supplierno]);
         var data = rows
         res.status(200).json( data[0] );
     } catch (err) {
@@ -67,7 +67,7 @@ const updateSupplierById = async (req, res) => {
         conn = await db.getConnection();
         const query =
             'UPDATE suppliermaster SET suppliername=? ,supplieraddress=? ,supplierphone1=? ,supplierphone2=? ,supplieremail=? ,openingbalance=?   WHERE supplierno=?';
-        const [result] = await conn.execute(query,[suppliername ,supplieraddress ,supplierphone1 ,supplierphone2 ,supplieremail ,openingbalance, supplierno]);
+        const [result] = await conn.query(query,[suppliername ,supplieraddress ,supplierphone1 ,supplierphone2 ,supplieremail ,openingbalance, supplierno]);
         console.log('Record Updated : ', result);
         res.status(200).json({ data: 'Supplier Updated',result: 'pass' });
     } catch (err) {
@@ -85,7 +85,7 @@ const deleteSupplierById = async (req, res) => {
         const supplierno = req.params.supplierno;
         conn = await db.getConnection();
         query="delete from suppliermaster where supplierno=?"
-        const [result]=await conn.execute(query,[supplierno]);
+        const [result]=await conn.query(query,[supplierno]);
         console.log('Rows affected:', result.affectedRows);
         res.status(200).json({ data: 'Supplier Deleted' });
     } catch (err) {

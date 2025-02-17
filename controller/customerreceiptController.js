@@ -15,7 +15,7 @@ const createCustomerreceipt = async (req, res) => {
                 vcustomerreceiptno=nextcustomerreceiptno[0].nextcustomerreceiptno
            } 
             query = 'INSERT INTO customerreceipt values (?,?,?,?,?,?,?) '; 
-            const [result] = await conn.execute(query, [vcustomerreceiptno,customerreceiptdate,custno,receiptamount,paymentmodeno,documentnumber,remarks])
+            const [result] = await conn.query(query, [vcustomerreceiptno,customerreceiptdate,custno,receiptamount,paymentmodeno,documentnumber,remarks])
             res.status(201).json({ custno:vcustomerreceiptno, data: 'Customerreceipt '+ mode,result:"pass" });
     } catch (err) {
         console.log('Error whie creating customerreceipt', err);
@@ -30,7 +30,7 @@ const fetchCustomerreceipts = async (req, res) => {
     try {
         conn = await db.getConnection();
         const query = `SELECT customermaster.customername,customerreceipt.* FROM customerreceipt inner join customermaster on customermaster.custno=customerreceipt.custno`;
-        const [rows] = await conn.execute(query);
+        const [rows] = await conn.query(query);
         res.status(200).json(rows);
     } catch (err) {
         console.log('Error whie fetchCustomerreceipts', err);
@@ -48,7 +48,7 @@ const fetchCustomerreceiptById = async (req, res) => {
         conn = await db.getConnection();
         const customerreceiptno = req.params.customerreceiptno;
         query = `SELECT * FROM customerreceipt WHERE customerreceiptno=?`;
-        const [rows] = await conn.execute(query,[customerreceiptno]);
+        const [rows] = await conn.query(query,[customerreceiptno]);
         var data = rows
         res.status(200).json( data );
     } catch (err) {
@@ -69,7 +69,7 @@ const updateCustomerreceiptById = async (req, res) => {
         conn = await db.getConnection();
         const query =
             'UPDATE customerreceipt SET customerreceiptdate=?,custno=?,receiptamount=?,paymentmodeno=?,documentnumber=?,remarks=?   WHERE customerreceiptno=?';
-        const [result] = await conn.execute(query,[customerreceiptdate,custno,receiptamount,paymentmodeno,documentnumber,remarks,customerreceiptno]);
+        const [result] = await conn.query(query,[customerreceiptdate,custno,receiptamount,paymentmodeno,documentnumber,remarks,customerreceiptno]);
         console.log('Record Updated : ', result);
         res.status(200).json({ data: 'Customerreceipt Updated',result:"pass" });
     } catch (err) {
@@ -87,7 +87,7 @@ const deleteCustomerreceiptById = async (req, res) => {
         const customerreceiptno = req.params.customerreceiptno;
         conn = await db.getConnection();
         query="delete from customerreceipt where customerreceiptno=?"
-        const [result]=await conn.execute(query,[customerreceiptno]);
+        const [result]=await conn.query(query,[customerreceiptno]);
         console.log('Rows affected:', result.affectedRows);
         res.status(200).json({ data: 'Customerreceipt Deleted' });
     } catch (err) {

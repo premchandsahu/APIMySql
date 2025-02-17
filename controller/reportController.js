@@ -7,7 +7,7 @@ const getCustomerOpeningBalance = async (req, res) => {
     try {
         conn = await db.getConnection();
         const query = `call getopeningbalance(?,?);`;
-        const [rows] = await conn.execute(query,[custno,fromdate]);
+        const [rows] = await conn.query(query,[custno,fromdate]);
         res.status(200).json(rows[0]);
     } catch (err) {     
         console.log('Error whie fetchCenters', err);
@@ -25,7 +25,7 @@ const getCustomerTransactions = async (req, res) => {
     try {
         conn = await db.getConnection();
         const query = `select * from transactions where transactions.custno=? and tdate between ? and ? order by tdate`;
-        const [rows] = await conn.execute(query,[custno,fromdate,todate]);
+        const [rows] = await conn.query(query,[custno,fromdate,todate]);
         res.status(200).json(rows);
     } catch (err) {
         console.log('Error whie fetchCenters', err);
@@ -43,7 +43,7 @@ const getItemOpeningBalance = async (req, res) => {
     try {
         conn = await db.getConnection();
         const query = `call getopeningbalanceitem(?,?,?);`;
-        const [rows] = await conn.execute(query,[centerno,productno,fromdate]);
+        const [rows] = await conn.query(query,[centerno,productno,fromdate]);
         res.status(200).json(rows[0]);
     } catch (err) {     
         console.log('Error whie fetchCenters', err);
@@ -61,7 +61,7 @@ const getItemTransactions = async (req, res) => {
     try {
         conn = await db.getConnection();
         const query = `select * from itemtransactions where itemtransactions.centerno=? and itemtransactions.productno=? and tdate between ? and ? order by tdate`;
-        const [rows] = await conn.execute(query,[centerno,productno,fromdate,todate]);
+        const [rows] = await conn.query(query,[centerno,productno,fromdate,todate]);
         res.status(200).json(rows);
     } catch (err) {
         console.log('Error whie fetchCenters', err);

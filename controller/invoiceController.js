@@ -24,7 +24,7 @@ const createInvoice = async (req, res) => {
         }
         console.log("calculate invoiceno", vinvoiceno)
         query = 'INSERT INTO invoicemaster values (?,?,?,?,?,?) ';
-        const [result] = await conn.execute(query, [vinvoiceno, invoicedate, custno, centerno, total, remarks])
+        const [result] = await conn.query(query, [vinvoiceno, invoicedate, custno, centerno, total, remarks])
         query = 'INSERT INTO invoiceline values (?,?,?,?,?,?) ';
         for (let i in details) {
             await conn.query(query, [vinvoiceno, centerno, details[i].productno, details[i].productqty, details[i].productrate, details[i].total]);
@@ -43,7 +43,7 @@ const fetchInvoices = async (req, res) => {
     try {
         conn = await db.getConnection();
         const query = `SELECT customer.customername,invoice.* FROM invoicemaster invoice inner join customermaster customer on customer.custno=invoice.custno order by invoice.invoiceno`;
-        const [rows] = await conn.execute(query);
+        const [rows] = await conn.query(query);
         res.status(200).json(rows);
     } catch (err) {
         console.log('Error whie fetchInvoices', err);
@@ -64,9 +64,9 @@ const fetchInvoiceById = async (req, res) => {
         const invoiceno = req.params.invoiceno;
         const centerno = req.params.centerno;
         query = 'SELECT * FROM invoicemaster WHERE invoiceno=? and centerno=?';
-        const [rows] = await conn.execute(query, [invoiceno, centerno]);
+        const [rows] = await conn.query(query, [invoiceno, centerno]);
         query = 'SELECT productno,productqty,productrate,total FROM invoiceline WHERE invoiceno=? and centerno=? ';
-        const [rowsd] = await conn.execute(query, [invoiceno, centerno]);
+        const [rowsd] = await conn.query(query, [invoiceno, centerno]);
         var data = rows
         data[0].details = await rowsd
         res.status(200).json(data);
@@ -88,7 +88,7 @@ const updateInvoiceById = async (req, res) => {
         conn = await db.getConnection();
         const query =
             'UPDATE tasks SET task_name=?, is_done=?, updated_at=? WHERE id=?';
-        const [result] = await conn.execute(query,
+        const [result] = await conn.query(query,
             [task_name, is_done, new Date(), id]);
         console.log('Record Updated : ', result);
         res.status(200).json({ data: 'Task Updated' });
@@ -108,9 +108,9 @@ const deleteInvoiceById = async (req, res) => {
         const centerno = req.params.centerno;
         conn = await db.getConnection();
         query = "delete from invoiceline where centerno=? and invoiceno=?"
-        const [resultl] = await conn.execute(query, [centerno, invoiceno]);
+        const [resultl] = await conn.query(query, [centerno, invoiceno]);
         query = "delete from invoicemaster where centerno=? and invoiceno=?"
-        const [result] = await conn.execute(query, [centerno, invoiceno]);
+        const [result] = await conn.query(query, [centerno, invoiceno]);
         console.log('Rows affected:', result.affectedRows, 'Rows affeccted lines:', resultl.affectedRows);
         res.status(200).json({ data: 'Invoice Deleted' });
     } catch (err) {
@@ -140,18 +140,18 @@ const InvoiceSummary = async (req, res) => {
         finalquery = await query.concat(centerfilter, customerfilter, "  group by customer.customername,invoicem.invoiceno,invoicem.invoicedate,invoicem.total order by invoicem.invoiceno")
         
         if (centerno && custno) {
-            [rows] = await conn.execute(finalquery, [fromdate, todate, centerno, custno]);
+            [rows] = await conn.query(finalquery, [fromdate, todate, centerno, custno]);
         } else if (centerno) {
-            [rows] = await conn.execute(finalquery, [fromdate, todate, centerno]);
+            [rows] = await conn.query(finalquery, [fromdate, todate, centerno]);
         } else if (custno) {
-            [rows] = await conn.execute(finalquery, [fromdate, todate, custno]);
+            [rows] = await conn.query(finalquery, [fromdate, todate, custno]);
         } else {
-            [rows] = await conn.execute(finalquery, [fromdate, todate]);
+            [rows] = await conn.query(finalquery, [fromdate, todate]);
         }
 
      
 
-        //const [rows] = await conn.execute(finalquery,[fromdate,todate]);
+        //const [rows] = await conn.query(finalquery,[fromdate,todate]);
         res.status(200).json(rows);
     } catch (err) {
         console.log('Error whie fetchInvoices', err);

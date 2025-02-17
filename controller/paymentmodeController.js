@@ -14,7 +14,7 @@ const createPaymentmode = async (req, res) => {
                 vpaymentmodeno=nextpaymentmodeno[0].nextpaymentmodeno
            } 
             query = 'INSERT INTO paymentmodemaster values (?,?,?,?,?,?,?) '; 
-            const [result] = await conn.execute(query, [vpaymentmodeno,paymentmodename ,paymentmodeaddress ,paymentmodephone1 ,paymentmodephone2 ,paymentmodeemail ,openingbalance])
+            const [result] = await conn.query(query, [vpaymentmodeno,paymentmodename ,paymentmodeaddress ,paymentmodephone1 ,paymentmodephone2 ,paymentmodeemail ,openingbalance])
             res.status(201).json({ paymentmodeno:vpaymentmodeno, data: 'Paymentmode '+ mode,result: "pass" });
     } catch (err) {
         console.log('Error whie creating paymentmode', err);
@@ -29,7 +29,7 @@ const fetchPaymentmodes = async (req, res) => {
     try {
         conn = await db.getConnection();
         const query = `SELECT paymentmode.* FROM paymentmode paymentmode`;
-        const [rows] = await conn.execute(query);9
+        const [rows] = await conn.query(query);9
         res.status(200).json(rows);
     } catch (err) {
         console.log('Error whie fetchPaymentmodes', err);
@@ -47,7 +47,7 @@ const fetchPaymentmodeById = async (req, res) => {
         conn = await db.getConnection();
         const paymentmodeno = req.params.paymentmodeno;
         query = `SELECT * FROM paymentmodemaster WHERE paymentmodeno=?`;
-        const [rows] = await conn.execute(query,[paymentmodeno]);
+        const [rows] = await conn.query(query,[paymentmodeno]);
         var data = rows
         res.status(200).json( data[0] );
     } catch (err) {
@@ -67,7 +67,7 @@ const updatePaymentmodeById = async (req, res) => {
         conn = await db.getConnection();
         const query =
             'UPDATE paymentmodemaster SET paymentmodename=? ,paymentmodeaddress=? ,paymentmodephone1=? ,paymentmodephone2=? ,paymentmodeemail=? ,openingbalance=?   WHERE paymentmodeno=?';
-        const [result] = await conn.execute(query,[paymentmodename ,paymentmodeaddress ,paymentmodephone1 ,paymentmodephone2 ,paymentmodeemail ,openingbalance, paymentmodeno]);
+        const [result] = await conn.query(query,[paymentmodename ,paymentmodeaddress ,paymentmodephone1 ,paymentmodephone2 ,paymentmodeemail ,openingbalance, paymentmodeno]);
         console.log('Record Updated : ', result);
         res.status(200).json({ data: 'Paymentmode Updated',result:'pass' });
     } catch (err) {
@@ -85,7 +85,7 @@ const deletePaymentmodeById = async (req, res) => {
         const paymentmodeno = req.params.paymentmodeno;
         conn = await db.getConnection();
         query="delete from paymentmodemaster where paymentmodeno=?"
-        const [result]=await conn.execute(query,[paymentmodeno]);
+        const [result]=await conn.query(query,[paymentmodeno]);
         console.log('Rows affected:', result.affectedRows);
         res.status(200).json({ data: 'Paymentmode Deleted' });
     } catch (err) {

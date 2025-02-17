@@ -14,7 +14,7 @@ const createUser = async (req, res) => {
                 vuserno=nextuserno[0].nextuserno
            } 
             query = 'INSERT INTO usermaster values (?,?,?,?,?,?,?) '; 
-            const [result] = await conn.execute(query, [vuserno,username ,password ,email ])
+            const [result] = await conn.query(query, [vuserno,username ,password ,email ])
             res.status(201).json({ userno:vuserno, data: 'User '+ mode,result: 'pass' });
     } catch (err) {
         console.log('Error whie creating user', err);
@@ -29,7 +29,7 @@ const fetchUsers = async (req, res) => {
     try {
         conn = await db.getConnection();
         const query = `SELECT user.* FROM usermaster user`;
-        const [rows] = await conn.execute(query);
+        const [rows] = await conn.query(query);
         res.status(200).json(rows);
     } catch (err) {
         console.log('Error whie fetchUsers', err);
@@ -47,7 +47,7 @@ const fetchUserById = async (req, res) => {
         conn = await db.getConnection();
         const userno = req.params.userno;
         query = `SELECT * FROM usermaster WHERE userno=?`;
-        const [rows] = await conn.execute(query,[userno]);
+        const [rows] = await conn.query(query,[userno]);
         var data = rows
         res.status(200).json( data[0] );
     } catch (err) {
@@ -67,7 +67,7 @@ const updateUserById = async (req, res) => {
         conn = await db.getConnection();
         const query =
             'UPDATE usermaster SET username ,password ,email WHERE userno=?';
-        const [result] = await conn.execute(query,[username ,password ,email , userno]);
+        const [result] = await conn.query(query,[username ,password ,email , userno]);
         console.log('Record Updated : ', result);
         res.status(200).json({ data: 'User Updated' , result:"pass"});
     } catch (err) {
@@ -85,7 +85,7 @@ const deleteUserById = async (req, res) => {
         const userno = req.params.userno;
         conn = await db.getConnection();
         query="delete from usermaster where userno=?"
-        const [result]=await conn.execute(query,[userno]);
+        const [result]=await conn.query(query,[userno]);
         console.log('Rows affected:', result.affectedRows);
         res.status(200).json({ data: 'User Deleted' });
     } catch (err) {

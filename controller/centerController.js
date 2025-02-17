@@ -8,13 +8,13 @@ const createCenter = async (req, res) => {
        
         const {centerno ,centername ,centeraddress ,centerphone1 ,centerphone2 ,centeremail ,openingbalance  } = req.body;
         vcenterno=centerno
-           if (vcenterno===0 || vcenterno===null) {
+           if (vcenterno===0 || vcenterno===null||vcenterno=="") {
                 query="select nvl((select max(v) from centermaster),0)+1 nextcenterno";
                 const [nextcenterno]= await conn.query(query);
                 vcenterno=nextcenterno[0].nextcenterno
            } 
             query = 'INSERT INTO centermaster values (?,?,?,?,?,?,?) '; 
-            const [result] = await conn.execute(query, [vcenterno,centername ,centeraddress ,centerphone1 ,centerphone2 ,centeremail ,openingbalance])
+            const [result] = await conn.query(query, [vcenterno,centername ,centeraddress ,centerphone1 ,centerphone2 ,centeremail ,openingbalance])
             res.status(201).json({ centerno:vcenterno, data: 'Center '+ mode });
     } catch (err) {
         console.log('Error whie creating center', err);
@@ -29,7 +29,7 @@ const fetchCenters = async (req, res) => {
     try {
         conn = await db.getConnection();
         const query = `SELECT center.* FROM centermaster center`;
-        const [rows] = await conn.execute(query);
+        const [rows] = await conn.query(query);
         res.status(200).json(rows);
     } catch (err) {
         console.log('Error whie fetchCenters', err);
@@ -48,7 +48,7 @@ const fetchCenterById = async (req, res) => {
         conn = await db.getConnection();
         const centerno = req.params.centerno;
         query = `SELECT * FROM centermaster WHERE centerno=?`;
-        const [rows] = await conn.execute(query,[centerno]);
+        const [rows] = await conn.query(query,[centerno]);
         var data = rows
         res.status(200).json( data[0] );
     } catch (err) {
@@ -68,7 +68,7 @@ const updateCenterById = async (req, res) => {
         conn = await db.getConnection();
         const query =
             'UPDATE centermaster SET centername=? ,centeraddress=? ,centerphone1=? ,centerphone2=? ,centeremail=? ,openingbalance=?   WHERE centerno=?';
-        const [result] = await conn.execute(query,[centername ,centeraddress ,centerphone1 ,centerphone2 ,centeremail ,openingbalance, centerno]);
+        const [result] = await conn.query(query,[centername ,centeraddress ,centerphone1 ,centerphone2 ,centeremail ,openingbalance, centerno]);
         console.log('Record Updated : ', result);
         res.status(200).json({ data: 'Center Updated' });
     } catch (err) {
@@ -86,7 +86,7 @@ const deleteCenterById = async (req, res) => {
         const centerno = req.params.centerno;
         conn = await db.getConnection();
         query="delete from centermaster where centerno=?"
-        const [result]=await conn.execute(query,[centerno]);
+        const [result]=await conn.query(query,[centerno]);
         console.log('Rows affected:', result.affectedRows);
         res.status(200).json({ data: 'Center Deleted' });
     } catch (err) {

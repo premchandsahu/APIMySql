@@ -16,7 +16,7 @@ const createCustomer = async (req, res) => {
                 vcustomerno=nextcustomerno[0].nextcustomerno
            } 
             query = 'INSERT INTO customermaster values (?,?,?,?,?,?,?) '; 
-            const [result] = await conn.execute(query, [vcustomerno,customername ,customeraddress ,customerphone1 ,customerphone2 ,customeremail ,openingbalance])
+            const [result] = await conn.query(query, [vcustomerno,customername ,customeraddress ,customerphone1 ,customerphone2 ,customeremail ,openingbalance])
             res.status(201).json({ custno:vcustomerno, data: 'Customer '+ mode,result: 'pass' });
     } catch (err) {
         console.log('Error whie creating customer', err);
@@ -31,7 +31,7 @@ const fetchCustomers = async (req, res) => {
     try {
         conn = await db.getConnection();
         const query = `SELECT customer.* FROM customermaster customer`;
-        const [rows] = await conn.execute(query);
+        const [rows] = await conn.query(query);
         res.status(200).json(rows);
     } catch (err) {
         console.log('Error whie fetchCustomers', err);
@@ -49,7 +49,7 @@ const fetchCustomerById = async (req, res) => {
         conn = await db.getConnection();
         const customerno = req.params.customerno;
         query = `SELECT * FROM customermaster WHERE custno=?`;
-        const [rows] = await conn.execute(query,[customerno]);
+        const [rows] = await conn.query(query,[customerno]);
         var data = rows
         res.status(200).json( data );
     } catch (err) {
@@ -69,7 +69,7 @@ const updateCustomerById = async (req, res) => {
         conn = await db.getConnection();
         const query =
             'UPDATE customermaster SET customername=? ,customeraddress=? ,customerphone1=? ,customerphone2=? ,customeremail=? ,openingbalance=?   WHERE custno=?';
-        const [result] = await conn.execute(query,[customername ,customeraddress ,customerphone1 ,customerphone2 ,customeremail ,openingbalance, custno]);
+        const [result] = await conn.query(query,[customername ,customeraddress ,customerphone1 ,customerphone2 ,customeremail ,openingbalance, custno]);
         console.log('Record Updated : ', result);
         res.status(200).json({ data: 'Customer Updated',result: 'pass' });
     } catch (err) {
@@ -87,7 +87,7 @@ const deleteCustomerById = async (req, res) => {
         const customerno = req.params.customerno;
         conn = await db.getConnection();
         query="delete from customermaster where custno=?"
-        const [result]=await conn.execute(query,[customerno]);
+        const [result]=await conn.query(query,[customerno]);
         console.log('Rows affected:', result.affectedRows);
         res.status(200).json({ data: 'Customer Deleted' });
     } catch (err) {
