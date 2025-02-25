@@ -40,6 +40,7 @@ const createInvoice = async (req, res) => {
 
 const fetchInvoices = async (req, res) => {
     let conn;
+    console.log("fromfetch invoices")
     try {
         conn = await db.getConnection();
         const query = `SELECT customer.customername,invoice.* FROM invoicemaster invoice inner join customermaster customer on customer.custno=invoice.custno order by invoice.invoiceno`;
@@ -53,6 +54,7 @@ const fetchInvoices = async (req, res) => {
         conn.release();
     }
 }
+
 
 
 
@@ -124,6 +126,7 @@ const deleteInvoiceById = async (req, res) => {
 
 const InvoiceSummary = async (req, res) => {
     let conn, customerfilter, finalquery, centerfilter, rows;
+    console.log("from invoice summary")
     const { fromdate, todate, custno, centerno } = await req.body
     const vecenterno = centerno ? centerno : 1
     centerfilter = centerno ? ` and invoicem.centerno=?` : " "
@@ -162,11 +165,34 @@ const InvoiceSummary = async (req, res) => {
     }
 }
 
+
+
+const fetchLastInvoice = async (req, res) => {
+    let conn;
+    console.log("from here")
+    const centerno=req.body.centerno
+    try {
+
+        conn = await db.getConnection();
+        const query = `SELECT max(invoiceno) lastinvoiceno FROM invoicemaster where centerno=?`;
+        const [rows] = await conn.query(query,[centerno]);
+        res.status(200).json(rows[0]);
+    } catch (err) {
+        console.log('Error whie fetchInvoices', err);
+        throw err;
+    } finally {
+        console.log('DB conn released');
+        conn.release();
+    }
+}
+
+
 module.exports = {
     fetchInvoices,
     fetchInvoiceById,
     createInvoice,
     updateInvoiceById,
     deleteInvoiceById,
-    InvoiceSummary
+    InvoiceSummary,
+    fetchLastInvoice
 }

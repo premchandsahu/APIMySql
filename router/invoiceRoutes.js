@@ -4,7 +4,8 @@ const { fetchInvoices,
     createInvoice,
     updateInvoiceById,
     deleteInvoiceById,
-    InvoiceSummary
+    InvoiceSummary,
+    fetchLastInvoice
 } = require('../controller/invoiceController');
 
 const router = express.Router();
@@ -15,5 +16,6 @@ router.post('/', createInvoice);
 router.put('/:id', updateInvoiceById);
 router.delete('/:invoiceno/:centerno', deleteInvoiceById);
 router.post('/reportinvoicesummary', InvoiceSummary);
+router.post('/lastinvoice', fetchLastInvoice);
 
 module.exports = router;
