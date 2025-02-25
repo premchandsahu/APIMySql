@@ -73,9 +73,30 @@ const getItemTransactions = async (req, res) => {
 }
 
 
+const getItemSummary = async (req, res) => {
+    let conn;
+    console.log(req.body)
+    const {centerno,fromdate,todate}=req.body
+    try {
+        conn = await db.getConnection();
+        const query = `select productmaster.productno,productmaster.name,sum(productqty) ,sum(productqty*productrate) amount from invoicemaster,invoiceline,productmaster where productmaster.productno=invoiceline.productno and invoicemaster.invoiceno=invoiceline.invoiceno and invoicemaster.centerno=invoiceline.centerno and invoicedate between ? and ?  and invoicemaster.centerno=? group by 1,2 order by 2`;
+        const [rows] = await conn.query(query,[fromdate,todate,centerno]);
+        res.status(200).json(rows);
+    } catch (err) {
+        console.log('Error whie fetchCenters', err);
+        throw err;
+    } finally {
+        console.log('DB conn released');
+        conn.release();
+    }
+}
+
+
+
 module.exports = {
     getCustomerOpeningBalance,
     getCustomerTransactions,
     getItemOpeningBalance,
-    getItemTransactions
+    getItemTransactions,
+    getItemSummary
 }
