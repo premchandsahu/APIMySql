@@ -60,6 +60,25 @@ const fetchProductById = async (req, res) => {
     }
 }
 
+const fetchProductByTest = async (req, res) => {
+    let conn;
+    try {
+        var query;
+        conn = await db.getConnection();
+        const productno = req.params.productno;
+        query = `SELECT * FROM productmaster WHERE productno=?`;
+        const [rows] = await conn.query(query,[productno]);
+        var data = rows
+        res.status(200).json( data[0] );
+    } catch (err) {
+        console.log('Error whie fetchProductById', err);
+        throw err;
+    } finally {
+        console.log('product DB conn released');
+        conn.release();
+    }
+}
+
 //Update method is not needed as of now. Insert and update operations have been handled inside post method.
 const updateProductById = async (req, res) => {
     let conn;
@@ -103,5 +122,6 @@ module.exports = {
     fetchProductById,
     createProduct,
     updateProductById,
-    deleteProductById
+    deleteProductById,
+    fetchProductByTest
 }

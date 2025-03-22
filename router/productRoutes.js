@@ -3,7 +3,8 @@ const { fetchProducts,
     fetchProductById,
     createProduct,
     updateProductById,
-    deleteProductById
+    deleteProductById,
+    fetchProductByTest
 } = require('../controller/productController');
 
 const router = express.Router();
@@ -13,5 +14,5 @@ router.get('/:productno', fetchProductById);
 router.post('/', createProduct);
 router.put('/', updateProductById);
 router.delete('/:productno', deleteProductById);
-
+router.get('/test/:productno', fetchProductByTest);    
 module.exports = router;

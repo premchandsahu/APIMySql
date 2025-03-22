@@ -29,7 +29,7 @@ const fetchCustomerreceipts = async (req, res) => {
     let conn;
     try {
         conn = await db.getConnection();
-        const query = `SELECT customermaster.customername,customerreceipt.* FROM customerreceipt inner join customermaster on customermaster.custno=customerreceipt.custno`;
+        const query = `SELECT customermaster.customername,customerreceipt.* FROM customerreceipt inner join customermaster on customermaster.custno=customerreceipt.custno order by customerreceiptno`;
         const [rows] = await conn.query(query);
         res.status(200).json(rows);
     } catch (err) {

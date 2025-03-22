@@ -24,7 +24,7 @@ const getCustomerTransactions = async (req, res) => {
     const {custno,fromdate,todate}=req.body
     try {
         conn = await db.getConnection();
-        const query = `select * from transactions where transactions.custno=? and tdate between ? and ? order by tdate`;
+        const query = `select * from transactions where transactions.custno=? and tdate between ? and ? order by tdate,ttype desc,tno`;
         const [rows] = await conn.query(query,[custno,fromdate,todate]);
         res.status(200).json(rows);
     } catch (err) {
@@ -60,7 +60,7 @@ const getItemTransactions = async (req, res) => {
     const {centerno,productno,fromdate,todate}=req.body
     try {
         conn = await db.getConnection();
-        const query = `select * from itemtransactions where itemtransactions.centerno=? and itemtransactions.productno=? and tdate between ? and ? order by tdate`;
+        const query = `select * from itemtransactions where itemtransactions.centerno=? and itemtransactions.productno=? and tdate between ? and ? order by tdate,ttype,tno`;
         const [rows] = await conn.query(query,[centerno,productno,fromdate,todate]);
         res.status(200).json(rows);
     } catch (err) {
@@ -74,13 +74,21 @@ const getItemTransactions = async (req, res) => {
 
 
 const getItemSummary = async (req, res) => {
-    let conn;
+    let conn,rows;
     console.log(req.body)
-    const {centerno,fromdate,todate}=req.body
+    const {centerno,fromdate,todate,custno}=req.body
+    const customerfilter = custno ? ` and invoicemaster.custno=?` : ""
     try {
         conn = await db.getConnection();
-        const query = `select productmaster.productno,productmaster.name,sum(productqty) ,sum(productqty*productrate) amount from invoicemaster,invoiceline,productmaster where productmaster.productno=invoiceline.productno and invoicemaster.invoiceno=invoiceline.invoiceno and invoicemaster.centerno=invoiceline.centerno and invoicedate between ? and ?  and invoicemaster.centerno=? group by 1,2 order by 2`;
-        const [rows] = await conn.query(query,[fromdate,todate,centerno]);
+        const query = `select productmaster.productno,productmaster.name,sum(productqty) qty ,sum(productqty*productrate) amount from invoicemaster,invoiceline,productmaster where productmaster.productno=invoiceline.productno and invoicemaster.invoiceno=invoiceline.invoiceno and invoicemaster.centerno=invoiceline.centerno and invoicedate between ? and ?  and invoicemaster.centerno=?`;
+        finalquery = await query.concat(customerfilter, "   group by 1,2 order by 2");
+        if (custno){
+        [rows] = await conn.query(finalquery,[fromdate,todate,centerno,custno]);
+        }
+        else{
+            [rows] = await conn.query(finalquery,[fromdate,todate,centerno]);
+        }
+
         res.status(200).json(rows);
     } catch (err) {
         console.log('Error whie fetchCenters', err);
