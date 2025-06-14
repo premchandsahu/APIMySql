@@ -80,8 +80,33 @@ const getItemSummary = async (req, res) => {
     const customerfilter = custno ? ` and invoicemaster.custno=?` : ""
     try {
         conn = await db.getConnection();
-        const query = `select productmaster.productno,productmaster.name,sum(productqty) qty ,sum(productqty*productrate) amount from invoicemaster,invoiceline,productmaster where productmaster.productno=invoiceline.productno and invoicemaster.invoiceno=invoiceline.invoiceno and invoicemaster.centerno=invoiceline.centerno and invoicedate between ? and ?  and invoicemaster.centerno=?`;
+        const query = `select productmaster.productno,productmaster.name,sum(productqty) qty ,sum(productqty*productrate) amount from invoicemaster,invoiceline,productmaster where productmaster.productno=invoiceline.productno and invoicemaster.invoiceno=invoiceline.invoiceno and invoicemaster.centerno=invoiceline.centerno and invoicedate between ? and ? `;
         finalquery = await query.concat(customerfilter, "   group by 1,2 order by 2");
+        if (custno){
+        [rows] = await conn.query(finalquery,[fromdate,todate,custno]);
+        }
+        else{
+            [rows] = await conn.query(finalquery,[fromdate,todate]);
+        }
+
+        res.status(200).json(rows);
+    } catch (err) {
+        console.log('Error whie fetchCenters', err);
+        throw err;
+    } finally {
+        console.log('DB conn released');
+        conn.release();
+    }
+}
+const getItemSummaryp = async (req, res) => {
+    let conn,rows;
+    console.log(req.body)
+    const {centerno,fromdate,todate,custno}=req.body
+    const customerfilter = custno ? ` and invoicemaster.custno=?` : ""
+    try {
+        conn = await db.getConnection();
+        const query = `select productmaster.productno,productmaster.name,sum(productqty) qty ,sum(productqty*productrate) amount,sum(productqty*purchaserate) pamount,sum(productqty*productrate) - sum(productqty*purchaserate) profitamount from invoicemaster,invoiceline,productmaster where productmaster.productno=invoiceline.productno and invoicemaster.invoiceno=invoiceline.invoiceno and invoicemaster.centerno=invoiceline.centerno and invoicedate between ? and ?  `;
+        finalquery = await query.concat(customerfilter, "   group by 1,2 order by 6 desc");
         if (custno){
         [rows] = await conn.query(finalquery,[fromdate,todate,centerno,custno]);
         }
@@ -100,11 +125,11 @@ const getItemSummary = async (req, res) => {
 }
 
 
-
 module.exports = {
     getCustomerOpeningBalance,
     getCustomerTransactions,
     getItemOpeningBalance,
     getItemTransactions,
-    getItemSummary
+    getItemSummary,
+    getItemSummaryp
 }
