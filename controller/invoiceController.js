@@ -133,7 +133,7 @@ const InvoiceSummary = async (req, res) => {
     customerfilter = custno ? ` and customer.custno=?` : " "
     try {
         conn = await db.getConnection();
-        const query = `SELECT customer.customername,invoicem.invoiceno,invoicem.invoicedate,invoicem.total totalSAmount,sum(invoicel.productqty*pm.purchaserate) totalPAmount,group_concat(pm.name,':',invoicel.productqty,'x',invoicel.productrate,'=',invoicel.total ) description 
+        const query = `SELECT customer.customername,invoicem.invoiceno,invoicem.invoicedate,sum(invoicel.productqty*invoicel.productrate) totalSAmount,sum(invoicel.productqty*pm.purchaserate) totalPAmount,group_concat(pm.name,':',invoicel.productqty,'x',invoicel.productrate,'=',invoicel.total ) description 
                         FROM invoiceline invoicel
                         inner join invoicemaster invoicem  on invoicem.invoiceno=invoicel.invoiceno and invoicem.centerno=invoicel.centerno
                         inner join productmaster pm on invoicel.productno=pm.productno

@@ -40,7 +40,33 @@ const fetchCustomerreceipts = async (req, res) => {
         conn.release();
     }
 }
+const fetchpostCustomerreceipts = async (req, res) => {
+     const {custno,fromdate,todate } = req.body;
+    customerfilter = custno ? ` and customermaster.custno=?` : " "
+    let conn;
+    try {
+        conn = await db.getConnection();
+        
+        const query = `SELECT customerreceipt.customerreceiptno,customerreceipt.customerreceiptdate,customermaster.customername,customerreceipt.receiptamount,paymentmode.paymentmodedescription,customerreceipt.documentnumber,customerreceipt.remarks FROM customerreceipt inner join customermaster on customermaster.custno=customerreceipt.custno inner join paymentmode on paymentmode.paymentmodeno=customerreceipt.paymentmodeno where date(customerreceipt.customerreceiptdate) between ? and ? `;
 
+        const finalquery = await query.concat(customerfilter, "   order by customerreceiptno desc")
+        await console.log(finalquery);
+        if (custno) {
+            [rows] = await conn.query(finalquery, [fromdate,todate,custno]);
+        } else {
+            [rows] = await conn.query(query,[fromdate,todate]);
+        }
+        
+       // const [rows] = await conn.query(query);
+        res.status(200).json(rows);
+    } catch (err) {
+        console.log('Error whie fetchCustomerreceipts', err);
+        throw err;
+    } finally {
+        console.log('DB conn released');
+        conn.release();
+    }
+}
 const fetchCustomerreceiptById = async (req, res) => {
     let conn;
     try {
@@ -104,5 +130,6 @@ module.exports = {
     fetchCustomerreceiptById,
     createCustomerreceipt,
     updateCustomerreceiptById,
-    deleteCustomerreceiptById
+    deleteCustomerreceiptById,
+    fetchpostCustomerreceipts
 }

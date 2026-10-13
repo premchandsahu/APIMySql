@@ -1,5 +1,25 @@
 const db = require("../database");
 
+
+
+const getAging = async (req, res) => {
+    let conn;
+    console.log(req.body)
+    const {custno}=req.body
+    try {
+        conn = await db.getConnection();
+        const query = `call getaging(?);`;
+        const [rows] = await conn.query(query,[custno]);
+        res.status(200).json(rows[0]);
+    } catch (err) {     
+        console.log('Error whie fetchAging', err);
+        throw err;
+    } finally {
+        console.log('DB conn released');
+        conn.release();
+    }
+}
+
 const getCustomerOpeningBalance = async (req, res) => {
     let conn;
     console.log(req.body)
@@ -131,5 +151,6 @@ module.exports = {
     getItemOpeningBalance,
     getItemTransactions,
     getItemSummary,
-    getItemSummaryp
+    getItemSummaryp,
+    getAging
 }

@@ -3,7 +3,8 @@ const { fetchCustomerreceipts,
     fetchCustomerreceiptById,
     createCustomerreceipt,
     updateCustomerreceiptById,
-    deleteCustomerreceiptById
+    deleteCustomerreceiptById,
+    fetchpostCustomerreceipts,
 } = require('../controller/customerreceiptController');
 
 const router = express.Router();
@@ -13,5 +14,5 @@ router.get('/:customerreceiptno', fetchCustomerreceiptById);
 router.post('/', createCustomerreceipt);
 router.put('/:customerreceiptno', updateCustomerreceiptById);
 router.delete('/:customerreceiptno', deleteCustomerreceiptById);
-
+router.post('/fetchpostcustomerreceipts', fetchpostCustomerreceipts);
 module.exports = router;
