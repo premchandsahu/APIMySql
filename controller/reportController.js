@@ -1,6 +1,8 @@
 const db = require("../database");
 
-
+function round2(value) {
+    return Number(Number(value || 0).toFixed(2));
+}
 
 const getAging = async (req, res) => {
     let conn;
@@ -30,6 +32,85 @@ const getCustomerOpeningBalance = async (req, res) => {
         const [rows] = await conn.query(query,[custno,fromdate]);
         res.status(200).json(rows[0]);
     } catch (err) {     
+        console.log('Error whie fetchCenters', err);
+        throw err;
+    } finally {
+        console.log('DB conn released');
+        conn.release();
+    }
+}
+
+async function getCustomerOpeningBalanceLedger(conn, custno, fromdate) {
+        const query = `call getopeningbalance(?,?);`;
+        const [rows] = await conn.query(query,[custno,fromdate]);
+        return {customeropening: rows[0] }
+}
+
+
+const getAgingLedger = async (conn,custno) => {
+        const query = `call getaging(?);`;
+        const [rows] = await conn.query(query,[custno]);
+        return  rows[0] 
+      
+}
+
+
+
+const getCustomerTransactionsLedger = async (req, res) => {
+    let conn;
+    console.log(req.body)
+    const {custno,fromdate,todate}=req.body
+    try {
+        conn = await db.getConnection();
+        const query = `select * from transactions where transactions.custno=? and tdate between ? and ? order by tdate,ttype desc,tno`;
+        const [rows] = await conn.query(query,[custno,fromdate,todate]);
+         const openingHistory = await getCustomerOpeningBalanceLedger(
+            conn,
+            custno,
+            fromdate
+        );    
+        const aging = await getAgingLedger(
+            conn,
+            custno,
+        );    
+
+        const openingBalance = Number(openingHistory.customeropening[0].balance)
+        let runningBalance = openingBalance;
+        
+        for (const transaction of rows) {
+           
+            runningBalance += Number(transaction.invoiceamount) - Number(transaction.receiptamount);
+            transaction.runningBalance = round2(runningBalance);
+          console.log({runningBalance: runningBalance,invoiceamount: transaction.invoiceamount,receiptamount: transaction.receiptamount})
+        }
+  console.log(rows);
+        const totalSales = rows.reduce(
+            (sum, row) => sum + Number(row.invoiceamount),
+            0
+        );
+        const totalReceipts = rows.reduce(
+            (sum, row) => sum + Number(row.receiptamount),
+            0
+        );
+        
+        const closingBalance = openingBalance + totalSales - totalReceipts;
+
+        res.json({
+            customer: {
+                custno: openingHistory.customeropening[0].custno,    
+                customername:openingHistory.customeropening[0].customername,
+                phone: openingHistory.customeropening[0].customerphone1,
+                aging: aging
+            },
+            summary: {
+                openingBalance: openingBalance,
+                totalSales: totalSales,
+                totalReceipts: totalReceipts,
+                closingBalance: closingBalance
+            },
+            rows
+        })
+    } catch (err) {
         console.log('Error whie fetchCenters', err);
         throw err;
     } finally {
@@ -152,5 +233,6 @@ module.exports = {
     getItemTransactions,
     getItemSummary,
     getItemSummaryp,
-    getAging
+    getAging,
+    getCustomerTransactionsLedger
 }
