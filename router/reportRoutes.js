@@ -1,5 +1,5 @@
 const express = require('express');
-const { getCustomerOpeningBalance,getCustomerTransactions,getItemOpeningBalance,getItemTransactions,getItemSummary,getItemSummaryp, getAging
+const { getCustomerOpeningBalance,getCustomerTransactions,getItemOpeningBalance,getItemTransactions,getItemSummary,getItemSummaryp, getAging, getCustomerTransactionsLedger
 } = require('../controller/reportController');
 
 const router = express.Router();
@@ -13,6 +13,7 @@ router.post('/itemtransaction', getItemTransactions);
 router.post('/itemsummary', getItemSummary);
 router.post('/itemsummaryp', getItemSummaryp);
 router.post('/aging', getAging);
+router.post('/ledger', getCustomerTransactionsLedger);
 //router.get('/aging/:customerno', getItemSummaryp);
 /*
 router.put('/', updateCenterById);
